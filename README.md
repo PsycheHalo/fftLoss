@@ -16,11 +16,5 @@ from fftLoss import fftLoss
 loss=fftLoss(input,target,dim=-1,meanOut=True,norm="ortho",absGain=1,angleGain=1)
 ```
 
-
-转置卷积要根据设定参数后的具体行为决定kernels维度要填到哪里,可以先写到inDim中尝试
-
-如果zeroMean为False,返回矩阵将没有小于零的值,并且是插值矩阵.否则,返回矩阵将对插值矩阵逐元素随机取反.   
-
-
 ## HomePage
-<https://github.com/PsycheHalo/glassInit/>
+<https://github.com/PsycheHalo/fftLoss/>
