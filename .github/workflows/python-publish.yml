@@ -18,7 +18,10 @@ permissions:
 jobs:
   release-build:
     runs-on: ubuntu-latest
-
+    outputs:
+      project_name: ${{ steps.metadata.outputs.name }}
+      version:      ${{ steps.metadata.outputs.version }}
+      
     steps:
       # 1. 检出完整仓库（必须拿到所有历史以便 push）
       - name: Checkout repository
@@ -70,6 +73,16 @@ jobs:
             echo "No version change detected, skipping commit."
           fi
 
+      - name: Extract project metadata
+        id: metadata
+        run: |
+          NAME=$(grep '^name[[:space:]]*=' pyproject.toml \
+                 | sed -E 's/name[[:space:]]*=[[:space:]]*"([^"]+)"/\1/')
+          VERSION=$(grep '^version[[:space:]]*=' pyproject.toml \
+                   | sed -E 's/version[[:space:]]*=[[:space:]]*"([^"]+)"/\1/')
+          echo "name=$NAME"      >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
@@ -104,6 +117,7 @@ jobs:
       # ALTERNATIVE: if your GitHub Release name is the PyPI project version string
       # ALTERNATIVE: exactly, uncomment the following line instead:
       # url: https://pypi.org/project/YOURPROJECT/${{ github.event.release.name }}
+      url: https://pypi.org/project/${{ needs.release-build.outputs.project_name }}/${{ needs.release-build.outputs.version }}
 
     steps:
       - name: Retrieve release distributions
